@@ -1,4 +1,4 @@
-## Using an old Nook for bus times and weather
+# Using an old Nook for bus times and weather
 
 A little project to put back into use an unused Barnes and Noble Nook that had been sitting in a drawer for years.
 
@@ -23,3 +23,12 @@ End result was:
 - Screensaver is set to update once a minute
 - I request weather data once an hour to reduce api calls to openweather.org
 - I bought a cheap picture frame, removed glass, created cardboard surround, cut notch for cable and taped it all together
+
+## bus.py
+The script running on the RPi
+
+## bus_test.html
+The starting part of me calling the tfl api to generate bus data for my location
+
+## test.html
+Working out some display parameters for the nook
