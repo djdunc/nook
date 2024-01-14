@@ -1,7 +1,7 @@
 # this script runs from crontab using setting below
 # */1 * * * * python /var/www/html/bus.py
 # this page is being served by a RPi on the same network as the nook
-# the nook then calls this html page and uses "electic page" to save as screensaver
+# the nook then calls this html page and uses "electic sign" to save as screensaver
 # screensaver is set to update once a minute
 # i only request weather data once an hour to reduce api calls to openweather
 # DW Jan 2024 - based on edent example at
