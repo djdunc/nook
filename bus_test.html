@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Arrival Information</title>
+</head>
+<body>
+
+<h1>Bus Arrival Information</h1>
+
+<div id="busInfo"></div>
+
+<script>
+// Function to fetch data from the API this station id is for CQ 
+// https://tfl.gov.uk/bus/stop/490003212S/alexandra-park-road/#first-last-service
+async function fetchData() {
+  try {
+    const response = await fetch('https://api.tfl.gov.uk/StopPoint/490003212S/arrivals');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
+// Function to convert seconds to minutes and seconds
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes} min ${remainingSeconds} sec`;
+}
+
+// Function to display bus information on the page, ordered by timeToStation
+function displayBusInfo(busData) {
+  const busInfoContainer = document.getElementById('busInfo');
+
+  // Clear previous content
+  busInfoContainer.innerHTML = '';
+
+  // Sort busData array by timeToStation
+  busData.sort((a, b) => a.timeToStation - b.timeToStation);
+
+  // Loop through the sorted bus predictions and display desired information
+  busData.forEach(prediction => {
+    const destination = prediction.destinationName;
+    const lineName = prediction.lineName;
+    const timeToStation = formatTime(prediction.timeToStation);
+    const vehicleId = prediction.vehicleId;
+
+    // Create a div element for each prediction
+    const predictionDiv = document.createElement('div');
+    predictionDiv.innerHTML = `<strong>Destination:</strong> ${destination}, <strong>Line:</strong> ${lineName}, <strong>Time to Station:</strong> ${timeToStation}`;
+
+    // Append the div to the container
+    busInfoContainer.appendChild(predictionDiv);
+  });
+}
+
+// Fetch data and display ordered bus information when the page loads
+document.addEventListener('DOMContentLoaded', async () => {
+  const busData = await fetchData();
+  displayBusInfo(busData);
+});
+</script>
+
+</body>
+</html>
