@@ -22,7 +22,7 @@ def fetch_bus():
 
 def fetch_weather():
     try:
-        response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=London&units=metric&appid=4d693e1f11651f5359a1559856bfede8')
+        response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=London&units=metric&appid=xxx')
         data = response.json()
         return data
     except Exception as e:
