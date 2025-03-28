@@ -41,8 +41,11 @@ function displayBusInfo(busData) {
   // Sort busData array by timeToStation
   busData.sort((a, b) => a.timeToStation - b.timeToStation);
 
+  // Limit to 5 bus predictions
+  const limitedBusData = busData.slice(0, 1);
+
   // Loop through the sorted bus predictions and display desired information
-  busData.forEach(prediction => {
+  limitedBusData.forEach(prediction => {
     const destination = prediction.destinationName;
     const lineName = prediction.lineName;
     const timeToStation = formatTime(prediction.timeToStation);

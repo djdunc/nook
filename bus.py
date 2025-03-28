@@ -36,6 +36,14 @@ def fetch_carbon():
     except Exception as e:
         print('Error fetching carbon data:', e)
 
+def fetch_co2():
+    try:
+        response = requests.get('https://global-warming.org/api/co2-api')
+        data = response.json()
+        return data
+    except Exception as e:
+        print('Error fetching co2 data:', e)
+
 # Function to convert seconds to minutes and seconds
 def format_time(seconds):
     minutes = seconds // 60
@@ -126,6 +134,79 @@ def get_carbon_html():
 
     return(carbon_html)
 
+def get_co2_graph_html():
+    co2_data = fetch_co2()
+    years = [item['year'] for item in co2_data['co2']]
+    cycle_values = [float(item['cycle']) for item in co2_data['co2']]
+    trend_values = [float(item['trend']) for item in co2_data['co2']]
+    latest_cycle = cycle_values[-1]
+    latest_trend = trend_values[-1]
+    latest_year = years[-1]
+    
+    graph_html = f'''
+    <canvas id="co2Chart" width="800" height="400"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('co2Chart').getContext('2d');
+        var myChart = new Chart(ctx, {{
+          type: 'line',
+          data: {{
+            labels: {years},
+            datasets: [{{
+              label: 'CO2 Cycle (ppm)',
+              data: {cycle_values},
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1,
+              fill: false,
+            }}, {{
+              label: 'CO2 Trend (ppm)',
+              data: {trend_values},
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1,
+              fill: false,
+            }}]
+          }},
+          options: {{
+            scales: {{
+              y: {{
+                beginAtZero: false,
+                title: {{
+                  display: true,
+                  text: 'CO2 Concentration (ppm)'
+                }}
+              }},
+              x: {{
+                ticks: {{
+                  callback: function(value, index, values) {{
+                    return {years}[index];
+                  }},
+                  autoSkip: true,
+                  maxTicksLimit: 20
+                }},
+                title: {{
+                  display: true,
+                  text: 'Year'
+                }}
+              }}
+            }},
+            plugins: {{
+              title: {{
+                display: true,
+                text: `CO2 Concentration Over Time (Latest Cycle: {latest_cycle} ppm, Trend: {latest_trend} ppm, Year: {latest_year})`,
+                padding: {{
+                  top: 10,
+                  bottom: 30
+                }}
+              }},
+              legend: {{
+                display: false,
+              }},
+            }}
+          }}
+        }});
+    </script>
+    '''
+    return graph_html
 
 
 # Function to display bus information and save to a file
@@ -135,11 +216,12 @@ def save_to_file():
     updated_html = get_time_html()
     weather_html = get_weather_html()
     carbon_html = get_carbon_html()
+    co2_graph_html = get_co2_graph_html()
 
     # Combine the array into a single string
     content = f'<html><head><title>Bus Arrival Information</title>' \
         f'<style>body{{margin: 20px; border: 20px solid white; box-sizing: border-box; font-size: 2em;}}</style></head>' \
-        f'<body>{updated_html}<p><strong>CQ</strong> towards Highgate</p>{bus_html}{weather_html}{carbon_html}</body></html>'
+        f'<body>{updated_html}<p><strong>CQ</strong> towards Highgate</p>{bus_html}{weather_html}{carbon_html}<hr>{co2_graph_html}</body></html>'
 
     # Write the content to a file
     with open('/var/www/html/bus.html', 'w', encoding='utf-8') as file:
